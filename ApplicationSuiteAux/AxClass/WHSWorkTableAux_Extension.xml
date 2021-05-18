@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>WHSWorkTableAux_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension class for table WHSWorkTable
+/// </summary>
+[ExtensionOf(tableStr(WHSWorkTable))]
+final class WHSWorkTableAux_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>displayWHSCycleCountPlanIdAux</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Display method for WHSCycleCountPlanId from WHSCycleCountPlanOverview
+    /// </summary>
+    /// <returns>planOverview.CycleCountPlanId</returns>
+    [SysClientCacheDataMethodAttribute(true)]
+    public display WHSCycleCountPlanId displayWHSCycleCountPlanIdAux()
+    {
+        WHSCycleCountPlanOverview planOverview;
+
+        select firstonly planOverview
+            where planOverview.RecId == this.CycleCountPlanOverview;
+
+        return planOverview.CycleCountPlanId;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
