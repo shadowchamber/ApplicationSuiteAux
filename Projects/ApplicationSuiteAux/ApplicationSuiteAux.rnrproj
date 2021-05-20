@@ -33,6 +33,11 @@
     <Folder Include="Classes\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AxClass\SettleAux">
+      <SubType>Content</SubType>
+      <Name>SettleAux</Name>
+      <Link>Classes\SettleAux</Link>
+    </Content>
     <Content Include="AxClass\WHSWorkTableAux_Extension">
       <SubType>Content</SubType>
       <Name>WHSWorkTableAux_Extension</Name>

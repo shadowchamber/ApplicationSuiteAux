@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>SettleAux</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Settlement auxiliary class.
+/// </summary>
+public class SettleAux
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>UnsettleCustByVoucher</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Unsettle customer transactions by voucher.
+    /// </summary>
+    /// <param name = "_voucher">Voucher.</param>
+    public static void UnsettleCustByVoucher(Voucher _voucher)
+    {
+        CustTrans findCustTrans;
+
+        select firstonly * from findCustTrans
+            where findCustTrans.Voucher == _voucher;
+
+        if (findCustTrans.RecId)
+        {
+            AmountCur balanceAmount = findCustTrans.remainAmountCur();
+
+            if (balanceAmount == 0)
+            {
+                CustTable custTable = custTable::find(findCustTrans.AccountNum);
+                CustSettlement custSettlement;
+
+                select firstonly custSettlement
+                    where custSettlement.TransCompany == findCustTrans.dataAreaId
+                        && custSettlement.TransRecId == findCustTrans.RecId
+                        && custSettlement.AccountNum == findCustTrans.AccountNum;
+
+                SpecTransManager specTransManager = SpecTransManager::newRefTableId(custTable, tablenum(custSettlement), true);
+                specTransManager.insert(custSettlement.DataAreaId, custSettlement.TableId, custSettlement.RecId, custSettlement.SettleAmountCur, findCustTrans.CurrencyCode);
+
+                CustVendSettlement custVendSettlement;
+
+                custVendSettlement = CustVendSettlement::findByModule(ModuleCustVend::Cust, custSettlement.RecId);
+
+                custVendSettlement.markThisAndRelatedOffsets(specTransManager, findCustTrans.CurrencyCode);
+
+                //custSettlement.CustVendSettlement::markOffsets(specTransManager, findCustTrans.CurrencyCode, true);
+
+                if (CustTrans::reverseTransact(custTable, null, settleDatePrinc::DateOfPayment, custSettlement.TransDate))
+                {
+                    specTransManager.deleteAll();
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>UnsettleVendByVoucher</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Unsettle vendor transactions by voucher.
+    /// </summary>
+    /// <param name = "_voucher">Voucher.</param>
+    public static void UnsettleVendByVoucher(Voucher _voucher)
+    {
+        VendTrans findVendTrans;
+
+        select firstonly * from findVendTrans
+            where findVendTrans.Voucher == _voucher;
+
+        if (findVendTrans.RecId)
+        {
+            AmountCur balanceAmount = findVendTrans.remainAmountCur();
+
+            if (balanceAmount == 0)
+            {
+                VendTable vendTable = VendTable::find(findVendTrans.AccountNum);
+                VendSettlement vendSettlement;
+
+                select firstonly vendSettlement
+                    where vendSettlement.TransCompany == findVendTrans.dataAreaId
+                        && vendSettlement.TransRecId == findVendTrans.RecId
+                        && vendSettlement.AccountNum == findVendTrans.AccountNum;
+
+                SpecTransManager specTransManager = SpecTransManager::newRefTableId(vendTable, tablenum(custSettlement), true);
+                specTransManager.insert(vendSettlement.DataAreaId, vendSettlement.TableId, vendSettlement.RecId, vendSettlement.SettleAmountCur, findVendTrans.CurrencyCode);
+
+                CustVendSettlement custVendSettlement;
+
+                custVendSettlement = CustVendSettlement::findByModule(ModuleCustVend::Vend, vendSettlement.RecId);
+
+                custVendSettlement.markThisAndRelatedOffsets(specTransManager, findVendTrans.CurrencyCode);
+
+                //custSettlement.CustVendSettlement::markOffsets(specTransManager, findCustTrans.CurrencyCode, true);
+
+                if (VendTrans::reverseTransact(vendTable, null, settleDatePrinc::DateOfPayment, vendSettlement.TransDate))
+                {
+                    specTransManager.deleteAll();
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>UnsettleByVoucher</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Unsettle transactions by voucher.
+    /// </summary>
+    /// <param name = "_voucher">Voucher.</param>
+    public static void UnsettleByVoucher(Voucher _voucher)
+    {
+        SettleAux::UnsettleCustByVoucher(_voucher);
+        SettleAux::UnsettleVendByVoucher(_voucher);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
