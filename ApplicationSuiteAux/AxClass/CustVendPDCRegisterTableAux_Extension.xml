@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>CustVendPDCRegisterTableAux_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// CustVendPDCRegister table extension class.
+/// </summary>
+[ExtensionOf(tableStr(CustVendPDCRegister))]
+final class CustVendPDCRegisterTableAux_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>existsForVendTrans</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Determines if <c>CustVendPDCRegister</c> table record exists for a specified <c>VendTrans</c> table record.
+    /// </summary>
+    /// <param name="_vendTransRecId">
+    /// The record ID of the <c>VendTrans</c> table record.
+    /// </param>
+    /// <returns>
+    /// true if a record is found; otherwise, false.
+    /// </returns>
+    public static boolean existsForVendTrans(RefRecId _vendTransRecId)
+    {
+        CustVendPDCRegister custVendPDCRegister;
+        LedgerJournalTrans ledgerJournalTrans;
+
+        Debug::assert(_vendTransRecId != 0);
+
+        select firstOnly RecId from custVendPDCRegister
+            exists join Recid from ledgerJournalTrans
+                where custVendPDCRegister.LedgerJournalTrans == ledgerJournalTrans.RecId
+                    && ledgerJournalTrans.VendTransId == _vendTransRecId;
+
+        return custVendPDCRegister.RecId != 0;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

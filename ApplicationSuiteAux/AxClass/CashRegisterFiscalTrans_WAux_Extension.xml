@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>CashRegisterFiscalTrans_WAux_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// CashRegisterFiscalTrans_W table extension class.
+/// </summary>
+[ExtensionOf(tableStr(CashRegisterFiscalTrans_W))]
+final class CashRegisterFiscalTrans_WAux_Extension
+{
+}
+
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>findVendTrans</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Finds the Cash register fiscal transaction for the given customer transaction.
+    /// </summary>
+    /// <param name="_custTrans">
+    /// The customer transaction.
+    /// </param>
+    /// <param name="_forUpdate">
+    /// A Boolean value that indicates whether to read the record for update; optional.
+    /// </param>
+    /// <returns>
+    /// The Cash register fiscal transaction.
+    /// </returns>
+    public server static CashRegisterFiscalTrans_W findVendTrans(
+        VendTrans _vendTrans,
+        boolean   _forUpdate = false)
+    {
+        CashRegisterFiscalTrans_W fiscalTrans;
+
+        if (_forUpdate)
+        {
+            fiscalTrans.selectForUpdate(true);
+        }
+
+        if (_vendTrans)
+        {
+            fiscalTrans = CashRegisterFiscalTrans_W::findVoucherDate(_vendTrans.Voucher, _vendTrans.TransDate, _forUpdate);
+        }
+
+        return fiscalTrans;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -33,6 +33,16 @@
     <Folder Include="Classes\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AxClass\CashRegisterFiscalTrans_WAux_Extension">
+      <SubType>Content</SubType>
+      <Name>CashRegisterFiscalTrans_WAux_Extension</Name>
+      <Link>Classes\CashRegisterFiscalTrans_WAux_Extension</Link>
+    </Content>
+    <Content Include="AxClass\CustVendPDCRegisterTableAux_Extension">
+      <SubType>Content</SubType>
+      <Name>CustVendPDCRegisterTableAux_Extension</Name>
+      <Link>Classes\CustVendPDCRegisterTableAux_Extension</Link>
+    </Content>
     <Content Include="AxClass\SettleAux">
       <SubType>Content</SubType>
       <Name>SettleAux</Name>
