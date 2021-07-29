@@ -88,17 +88,17 @@ public class SettleAux
                         && vendSettlement.TransRecId == findVendTrans.RecId
                         && vendSettlement.AccountNum == findVendTrans.AccountNum;
 
-                SpecTransManager specTransManager = SpecTransManager::newRefTableId(vendTable, tablenum(custSettlement), true);
+                SpecTransManager specTransManager = SpecTransManager::newRefTableId(vendTable, tablenum(VendSettlement), true);
                 specTransManager.insert(vendSettlement.DataAreaId, vendSettlement.TableId, vendSettlement.RecId, vendSettlement.SettleAmountCur, findVendTrans.CurrencyCode);
-
+                
                 CustVendSettlement custVendSettlement;
 
                 custVendSettlement = CustVendSettlement::findByModule(ModuleCustVend::Vend, vendSettlement.RecId);
 
-                custVendSettlement.markThisAndRelatedOffsets(specTransManager, findVendTrans.CurrencyCode);
+                CustVendSettlementInterface intf = custVendSettlement.custVendSettlementInterface();
 
-                //custSettlement.CustVendSettlement::markOffsets(specTransManager, findCustTrans.CurrencyCode, true);
-
+                intf.markThisAndRelatedOffsets(specTransManager, findVendTrans.CurrencyCode);
+                
                 if (VendTrans::reverseTransact(vendTable, null, settleDatePrinc::DateOfPayment, vendSettlement.TransDate))
                 {
                     specTransManager.deleteAll();
